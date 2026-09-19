@@ -1,3 +1,22 @@
+// --- CÁC HÀM QUẢN LÝ GIỎ HÀNG THEO TỪNG TÀI KHOẢN (UID) ---
+
+// Lấy mã UID của user đang đăng nhập hiện tại từ Firebase/LocalStorage
+function getCurrentUserUid() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    return user ? user.uid : "guest"; // Nếu chưa đăng nhập thì dùng tạm key "guest"
+}
+
+// Lấy giỏ hàng riêng biệt của tài khoản đang đăng nhập
+function getCart() {
+    const uid = getCurrentUserUid();
+    return JSON.parse(localStorage.getItem("cart_" + uid)) || [];
+}
+
+// Lưu giỏ hàng riêng biệt cho tài khoản đang đăng nhập
+function saveCart(cart) {
+    const uid = getCurrentUserUid();
+    localStorage.setItem("cart_" + uid, JSON.stringify(cart));
+}
 const products = [
     {
         id: 1,
