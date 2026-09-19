@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán - Nhà Thuốc Thái Hòa</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        header {
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 32px;
+        }
+
+        .logo-area {
+            font-weight: 700;
+            font-size: 20px;
+            color: #0d9488;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 32px auto;
+            padding: 0 16px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #0d9488;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 24px;
+        }
+
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .checkout-form-section, .checkout-summary {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 24px;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: #0d9488;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #64748b;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 16px;
+            padding-top: 16px;
+        }
+
+        .summary-total span:last-child {
+            color: #0d9488;
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            background: #0d9488;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #0f766e;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-area">🌿 Nhà Thuốc Thái Hòa</a>
+    </header>
+
+    <div class="container">
+        <a href="cart.html" class="back-link">← Quay lại giỏ hàng</a>
+        <h1>Thanh Toán Đơn Hàng</h1>
+
+        <div class="checkout-layout">
+            <!-- Thông tin giao hàng -->
+            <div class="checkout-form-section">
+                <h3>Thông tin người nhận</h3>
+                <form id="checkout-form">
+                    <div class="form-group">
+                        <label>Họ và tên</label>
+                        <input type="text" id="fullname" required placeholder="Nhập họ tên của bạn">
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại</label>
+                        <input type="tel" id="phone" required placeholder="Nhập số điện thoại">
+                    </div>
+                    <div class="form-group">
+                        <label>Địa chỉ nhận hàng</label>
+                        <textarea id="address" rows="3" required placeholder="Số nhà, tên đường, phường/xã..."></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tóm tắt đơn hàng -->
+            <div class="checkout-summary">
+                <h3>Tóm tắt đơn hàng</h3>
+                <div id="summary-products-list"></div>
+
+                <div class="summary-total">
+                    <span>Tổng tiền:</span>
+                    <span id="summary-total-price">0 đ</span>
+                </div>
+
+                <button type="button" class="btn-submit" id="btn-confirm-order">Xác Nhận Đặt Hàng</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Hàm bóc tách chuỗi giá tiền (ví dụ: "150.000 đ") thành số nguyên chính xác
+        function parsePrice(priceStr) {
+            if (typeof priceStr === 'number') return priceStr;
+            if (!priceStr) return 0;
+            let numeric = priceStr.toString().replace(/[^\d]/g, '');
+            return Number(numeric) || 0;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const productListArea = document.getElementById("summary-products-list");
+            const totalPriceEl = document.getElementById("summary-total-price");
+
+            let totalAmount = 0;
+            let htmlList = '';
+
+            if (cart.length === 0) {
+                productListArea.innerHTML = `<p style="color: #64748b; font-size: 14px; margin-bottom: 12px;">Giỏ hàng trống.</p>`;
+            } else {
+                cart.forEach(item => {
+                    let price = parsePrice(item.price);
+                    let qty = Number(item.quantity) || 1;
+                    let itemTotal = price * qty;
+                    totalAmount += itemTotal;
+
+                    htmlList += `
+                        <div class="summary-item">
+                            <span>${item.name} (x${qty})</span>
+                            <span>${itemTotal.toLocaleString('vi-VN')} đ</span>
+                        </div>
+                    `;
+                });
+                productListArea.innerHTML = htmlList;
+            }
+
+            totalPriceEl.innerText = totalAmount.toLocaleString('vi-VN') + " đ";
+
+            // Xử lý khi bấm Xác Nhận Đặt Hàng và LƯU ĐƠN HÀNG
+            const confirmBtn = document.getElementById("btn-confirm-order");
+            confirmBtn.addEventListener("click", () => {
+                const fullname = document.getElementById("fullname").value.trim();
+                const phone = document.getElementById("phone").value.trim();
+                const address = document.getElementById("address").value.trim();
+
+                if (!fullname || !phone || !address) {
+                    alert("Vui lòng điền đầy đủ thông tin giao hàng!");
+                    return;
+                }
+
+                if (cart.length === 0) {
+                    alert("Giỏ hàng của bạn đang trống!");
+                    return;
+                }
+
+                // Tạo đối tượng đơn hàng
+                const newOrder = {
+                    id: "DH" + Date.now(),
+                    customer: { fullname, phone, address },
+                    items: cart,
+                    total: totalAmount,
+                    date: new Date().toLocaleString('vi-VN')
+                };
+
+                // Lưu vào localStorage mục 'orders'
+                let orders = JSON.parse(localStorage.getItem("orders")) || [];
+                orders.push(newOrder);
+                localStorage.setItem("orders", JSON.stringify(orders));
+
+                alert("Đặt hàng thành công! Mã đơn hàng: " + newOrder.id);
+                
+                // Xóa giỏ hàng
+                localStorage.removeItem("cart");
+
+                // Quay về trang chủ
+                window.location.href = "index.html";
+            });
+        });
+    </script>
+</body>
+</html>

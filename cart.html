@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ Hàng - Nhà Thuốc Thái Hòa</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        header {
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 32px;
+        }
+
+        .logo-area {
+            font-weight: 700;
+            font-size: 20px;
+            color: #0d9488;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 32px auto;
+            padding: 0 16px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #0d9488;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 24px;
+        }
+
+        .cart-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .cart-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .cart-items {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .item-img {
+            width: 60px;
+            height: 60px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .item-img img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .item-details h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .item-details p {
+            font-size: 14px;
+            color: #0d9488;
+            font-weight: 600;
+        }
+
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .quantity-control button {
+            background: #f8fafc;
+            border: none;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .quantity-control button:hover {
+            background: #e2e8f0;
+        }
+
+        .quantity-control span {
+            padding: 0 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-remove {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .btn-remove:hover {
+            text-decoration: underline;
+        }
+
+        .cart-summary {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .cart-summary h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 16px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .summary-row.total {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+
+        .summary-row.total span:last-child {
+            color: #0d9488;
+        }
+
+        .btn-checkout {
+            display: block;
+            width: 100%;
+            background: #0d9488;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: background 0.2s;
+        }
+
+        .btn-checkout:hover {
+            background: #0f766e;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px 0;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-area">🌿 Nhà Thuốc Thái Hòa</a>
+    </header>
+
+    <div class="container">
+        <a href="index.html" class="back-link">← Tiếp tục mua hàng</a>
+        <h1>Giỏ Hàng Của Bạn</h1>
+
+        <div id="cart-content-area">
+            <!-- Dữ liệu giỏ hàng sẽ được render động bằng JavaScript ở đây -->
+        </div>
+    </div>
+
+    <script>
+        // Hàm bóc tách chuỗi giá tiền (ví dụ: "150.000 đ" hoặc "150,000") thành số nguyên chính xác để tính toán
+        function parsePrice(priceStr) {
+            if (typeof priceStr === 'number') return priceStr;
+            if (!priceStr) return 0;
+            let numeric = priceStr.toString().replace(/[^\d]/g, '');
+            return Number(numeric) || 0;
+        }
+
+        function renderCart() {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const container = document.getElementById("cart-content-area");
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="cart-items empty-cart">
+                        <p style="font-size: 16px; margin-bottom: 12px;">Giỏ hàng của bạn đang trống!</p>
+                        <a href="index.html" style="color: #0d9488; font-weight: 600; text-decoration: none;">Quay lại mua sắm ngay</a>
+                    </div>
+                `;
+                return;
+            }
+
+            let htmlItems = '';
+            let totalAmount = 0;
+
+            cart.forEach((item, index) => {
+                let numericPrice = parsePrice(item.price);
+                let quantity = Number(item.quantity) || 1;
+                let itemTotal = numericPrice * quantity;
+                totalAmount += itemTotal;
+
+                // Xử lý hiển thị ảnh linh hoạt trong giỏ hàng
+                let imageHtml = '';
+                let imgData = item.image || item.img;
+                if (imgData) {
+                    if (imgData.includes('<img')) {
+                        imageHtml = imgData;
+                    } else if (imgData.startsWith('http') || imgData.startsWith('./') || imgData.startsWith('/')) {
+                        imageHtml = `<img src="${imgData}" alt="${item.name}">`;
+                    } else {
+                        imageHtml = `<span style="font-size: 28px;">${imgData}</span>`;
+                    }
+                } else {
+                    imageHtml = `<span style="font-size: 28px;">💊</span>`;
+                }
+
+                htmlItems += `
+                    <div class="cart-item">
+                        <div class="item-info">
+                            <div class="item-img">${imageHtml}</div>
+                            <div class="item-details">
+                                <h4>${item.name}</h4>
+                                <p>${numericPrice.toLocaleString('vi-VN')} đ</p>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <div class="quantity-control">
+                                <button onclick="updateQty(${index}, -1)">-</button>
+                                <span>${quantity}</span>
+                                <button onclick="updateQty(${index}, 1)">+</button>
+                            </div>
+                            <button class="btn-remove" onclick="removeItem(${index})">Xóa</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="cart-layout">
+                    <div class="cart-items">
+                        ${htmlItems}
+                    </div>
+                    <div class="cart-summary">
+                        <h3>Cộng giỏ hàng</h3>
+                        <div class="summary-row">
+                            <span>Tạm tính</span>
+                            <span>${totalAmount.toLocaleString('vi-VN')} đ</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Phí vận chuyển</span>
+                            <span>Miễn phí</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Tổng cộng</span>
+                            <span>${totalAmount.toLocaleString('vi-VN')} đ</span>
+                        </div>
+                        <a href="checkout.html" class="btn-checkout">Tiến hành thanh toán</a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Tăng/giảm số lượng sản phẩm
+        function updateQty(index, change) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart[index].quantity = (Number(cart[index].quantity) || 1) + change;
+            
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            
+            localStorage.setItem("cart", JSON.stringify(cart));
+            renderCart();
+        }
+
+        // Xóa sản phẩm khỏi giỏ
+        function removeItem(index) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart.splice(index, 1);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            renderCart();
+        }
+
+        // Chạy hàm render khi vừa load trang
+        document.addEventListener("DOMContentLoaded", renderCart);
+    </script>
+</body>
+</html>

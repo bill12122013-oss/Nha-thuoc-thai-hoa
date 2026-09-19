@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Đơn Hàng - Nhà Thuốc Thái Hòa</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        header {
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 32px;
+        }
+
+        .logo-area {
+            font-weight: 700;
+            font-size: 20px;
+            color: #0d9488;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 32px auto;
+            padding: 0 16px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 24px;
+        }
+
+        .order-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+
+        .order-id {
+            font-weight: 700;
+            color: #0d9488;
+            font-size: 16px;
+        }
+
+        .order-date {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .customer-info {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .customer-info strong {
+            color: #1e293b;
+        }
+
+        .order-items-list {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .order-item-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            padding: 4px 0;
+            color: #334155;
+        }
+
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 12px;
+        }
+
+        .order-total {
+            font-weight: 700;
+            font-size: 15px;
+            color: #1e293b;
+        }
+
+        .order-total span {
+            color: #0d9488;
+        }
+
+        .btn-delete-order {
+            background: #fee2e2;
+            color: #ef4444;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-delete-order:hover {
+            background: #fecaca;
+        }
+
+        .empty-orders {
+            text-align: center;
+            padding: 50px 0;
+            color: #64748b;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-area">🌿 Quản Trị - Nhà Thuốc Thái Hòa</a>
+    </header>
+
+    <div class="container">
+        <h1>Danh Sách Đơn Hàng Khách Đặt</h1>
+        <div id="admin-orders-container">
+            <!-- Đơn hàng sẽ được render ở đây -->
+        </div>
+    </div>
+
+    <script>
+        // Hàm bóc tách chuỗi giá tiền thành số nguyên an toàn
+        function parsePrice(priceStr) {
+            if (typeof priceStr === 'number') return priceStr;
+            if (!priceStr) return 0;
+            let numeric = priceStr.toString().replace(/[^\d]/g, '');
+            return Number(numeric) || 0;
+        }
+
+        function renderAdminOrders() {
+            let orders = JSON.parse(localStorage.getItem("orders")) || [];
+            const container = document.getElementById("admin-orders-container");
+
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-orders">
+                        <p style="font-size: 16px; margin-bottom: 8px;">Chưa có đơn hàng nào được đặt.</p>
+                        <p style="font-size: 13px; color: #94a3b8;">Khi khách hàng đặt hàng thành công, thông tin sẽ hiển thị ở đây.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let htmlOrders = '';
+
+            // Duyệt ngược để đơn hàng mới nhất lên trên đầu
+            orders.slice().reverse().forEach(order => {
+                let itemsHtml = '';
+                let calculatedTotal = 0;
+
+                order.items.forEach(item => {
+                    let itemPrice = parsePrice(item.price);
+                    let itemQty = Number(item.quantity) || 1;
+                    let itemTotal = itemPrice * itemQty;
+                    calculatedTotal += itemTotal;
+
+                    itemsHtml += `
+                        <div class="order-item-row">
+                            <span>- ${item.name} (SL: ${itemQty})</span>
+                            <span>${itemTotal.toLocaleString('vi-VN')} đ</span>
+                        </div>
+                    `;
+                });
+
+                let finalTotal = parsePrice(order.total) || calculatedTotal;
+
+                htmlOrders += `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <span class="order-id">Mã đơn: ${order.id}</span>
+                            <span class="order-date">📅 ${order.date}</span>
+                        </div>
+                        <div class="customer-info">
+                            <p><strong>Khách hàng:</strong> ${order.customer.fullname}</p>
+                            <p><strong>Số điện thoại:</strong> ${order.customer.phone}</p>
+                            <p><strong>Địa chỉ giao hàng:</strong> ${order.customer.address}</p>
+                        </div>
+                        <div class="order-items-list">
+                            <p style="font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #64748b;">Chi tiết sản phẩm:</p>
+                            ${itemsHtml}
+                        </div>
+                        <div class="order-footer">
+                            <div class="order-total">Tổng tiền thanh toán: <span>${finalTotal.toLocaleString('vi-VN')} đ</span></div>
+                            <button class="btn-delete-order" onclick="deleteOrder('${order.id}')">Xóa đơn hàng</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = htmlOrders;
+        }
+
+        // Xóa đơn hàng an toàn dựa theo mã ID đơn hàng
+        function deleteOrder(orderId) {
+            if (confirm("Bạn có chắc chắn muốn xóa đơn hàng này không?")) {
+                let orders = JSON.parse(localStorage.getItem("orders")) || [];
+                orders = orders.filter(order => order.id !== orderId);
+                localStorage.setItem("orders", JSON.stringify(orders));
+                renderAdminOrders();
+            }
+        }
+
+        // Gom chung logic kiểm tra bảo mật và render khi trang load xong
+        document.addEventListener("DOMContentLoaded", () => {
+            const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
+            const currentEmail = localStorage.getItem("currentUserEmail");
+            
+            // Kiểm tra phân quyền truy cập Admin
+            if (isAdminLoggedIn !== "true" || currentEmail !== "bill12122013@gmail.com") {
+                alert("Bạn không có quyền truy cập trang quản trị!");
+                window.location.href = "login.html";
+                return;
+            }
+            
+            console.log("Chào mừng Admin đã đăng nhập!");
+            
+            // Nếu đúng là admin thì gọi hàm hiển thị danh sách đơn hàng
+            renderAdminOrders();
+        });
+    </script>
+</body>
+</html>

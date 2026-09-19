@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Sản Phẩm - Nhà Thuốc Thái Hòa</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        /* Header Styles */
+        header {
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 32px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #0d9488;
+        }
+
+        .cart-btn {
+            background: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+
+        .cart-btn:hover {
+            background: #dc2626;
+        }
+
+        /* Container Chi Tiết */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #0d9488;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .product-detail-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .detail-img-box {
+            width: 100%;
+            height: 300px;
+            background: #f8fafc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid #f1f5f9;
+        }
+
+        .detail-img-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .detail-info h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .detail-price {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0d9488;
+            margin-bottom: 20px;
+        }
+
+        .detail-desc {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #475569;
+            margin-bottom: 24px;
+        }
+
+        .btn-add {
+            background: #0d9488;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-add:hover {
+            background: #0f766e;
+        }
+
+        /* Lỗi không tìm thấy sản phẩm */
+        .error-box {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .error-box h2 {
+            color: #1e293b;
+            font-size: 20px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo-area">
+            <span>🌿 Nhà Thuốc Thái Hòa</span>
+        </div>
+        <div>
+            <a href="cart.html" class="cart-btn">🛒 Giỏ hàng <span id="cart-count">0</span></a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container" id="main-container">
+        <!-- Nội dung chi tiết sản phẩm sẽ được render tự động vào đây -->
+    </div>
+
+    <!-- Nhúng file dữ liệu gốc data.js -->
+    <script src="data.js"></script>
+
+    <script>
+        // Toast thông báo đẹp mắt
+        function showCustomToast(message) {
+            let existingToast = document.getElementById("custom-toast");
+            if (existingToast) existingToast.remove();
+
+            const toast = document.createElement("div");
+            toast.id = "custom-toast";
+            toast.innerText = message;
+            toast.style.cssText = `
+                position: fixed; bottom: 24px; right: 24px;
+                background: #0d9488; color: white; padding: 12px 20px;
+                border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                font-size: 14px; font-weight: 500; z-index: 1000;
+                transition: opacity 0.3s ease;
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        // Cập nhật số lượng giỏ hàng trên Header
+        function updateCartCount() {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            let totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const cartCountEl = document.getElementById("cart-count");
+            if (cartCountEl) {
+                cartCountEl.innerText = totalCount;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateCartCount();
+
+            const container = document.getElementById("main-container");
+            
+            // Lấy id từ URL (ví dụ: detail.html?id=2)
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get("id");
+
+            // Kiểm tra xem biến products trong data.js có tồn tại không
+            if (typeof products === 'undefined' || !productId) {
+                container.innerHTML = `
+                    <a href="index.html" class="back-link">← Quay lại trang chủ</a>
+                    <div class="error-box">
+                        <h2>Sản phẩm không tồn tại hoặc không tìm thấy mã sản phẩm!</h2>
+                    </div>
+                `;
+                return;
+            }
+
+            // Tìm sản phẩm bằng toán kinh so sánh lỏng (==) để khớp cả dạng chuỗi và số
+            const product = products.find(p => p.id == productId);
+
+            if (!product) {
+                container.innerHTML = `
+                    <a href="index.html" class="back-link">← Quay lại trang chủ</a>
+                    <div class="error-box">
+                        <h2>Sản phẩm không tồn tại hoặc không tìm thấy mã sản phẩm!</h2>
+                    </div>
+                `;
+                return;
+            }
+
+            // Xử lý hiển thị ảnh linh hoạt
+            let imageHtml = '';
+            if (product.image) {
+                if (product.image.includes('<img')) {
+                    imageHtml = product.image;
+                } else if (product.image.startsWith('http') || product.image.startsWith('./') || product.image.startsWith('/')) {
+                    imageHtml = `<img src="${product.image}" alt="${product.name}">`;
+                } else {
+                    imageHtml = `<span style="font-size: 80px;">${product.image}</span>`;
+                }
+            } else {
+                imageHtml = `<span style="font-size: 80px;">💊</span>`;
+            }
+
+            // Render thông tin chi tiết sản phẩm ra màn hình
+            container.innerHTML = `
+                <a href="index.html" class="back-link">← Quay lại trang chủ</a>
+                <div class="product-detail-card">
+                    <div class="detail-img-box">
+                        ${imageHtml}
+                    </div>
+                    <div class="detail-info">
+                        <h1>${product.name}</h1>
+                        <div class="detail-price">${product.price}</div>
+                        <div class="detail-desc">${product.description || 'Chưa có mô tả chi tiết cho sản phẩm này.'}</div>
+                        <button class="btn-add" id="btn-add-to-cart">Thêm vào giỏ hàng</button>
+                    </div>
+                </div>
+            `;
+
+            // Xử lý sự kiện thêm vào giỏ hàng ở trang chi tiết
+            const addToCartBtn = document.getElementById("btn-add-to-cart");
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener("click", () => {
+                    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+                    let existingItem = cart.find(item => item.id == product.id);
+
+                    let safeImage = product.image;
+                    if (safeImage && !safeImage.includes('<img') && !safeImage.startsWith('http')) {
+                        safeImage = '💊';
+                    }
+
+                    if (existingItem) {
+                        existingItem.quantity += 1;
+                    } else {
+                        cart.push({
+                            id: product.id,
+                            name: product.name,
+                            price: product.price,
+                            image: safeImage,
+                            quantity: 1
+                        });
+                    }
+
+                    localStorage.setItem("cart", JSON.stringify(cart));
+                    updateCartCount();
+                    showCustomToast(`Đã thêm "${product.name}" vào giỏ hàng!`);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

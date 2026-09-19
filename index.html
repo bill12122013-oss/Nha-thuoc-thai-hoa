@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhà Thuốc Thái Hòa</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        header {
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 32px;
+        }
+        .logo-area {
+            font-weight: 700;
+            font-size: 20px;
+            color: #0d9488;
+            text-decoration: none;
+        }
+        .nav-links a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #475569;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .nav-links a:hover {
+            color: #0d9488;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 32px auto;
+            padding: 0 16px;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 24px;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .product-img {
+            width: 100%;
+            height: 160px;
+            object-fit: contain; 
+            background: #ffffff;   
+            padding: 10px;         
+        }
+        .product-info {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+        .product-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            text-decoration: none;
+        }
+        .product-name:hover {
+            color: #0d9488;
+        }
+        .product-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0d9488;
+            margin-bottom: 12px;
+        }
+        .btn-detail {
+            display: block;
+            text-align: center;
+            background: #f0fdf4;
+            color: #0d9488;
+            border: 1px solid #bbf7d0;
+            padding: 8px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .btn-detail:hover {
+            background: #dcfce7;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-area">🌿 Nhà Thuốc Thái Hòa</a>
+        <div class="nav-links">
+            <a href="index.html">Trang chủ</a>
+            <a href="cart.html">🛒 Giỏ hàng</a>
+
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Sản Phẩm Nổi Bật</h1>
+        <div class="product-grid" id="product-list">
+            <!-- Sản phẩm sẽ được render tự động từ data.js -->
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const productListContainer = document.getElementById("product-list");
+            
+            if (typeof products === 'undefined' || products.length === 0) {
+                productListContainer.innerHTML = `<p>Chưa có sản phẩm nào trong hệ thống.</p>`;
+                return;
+            }
+
+            let html = '';
+            products.forEach(p => {
+                html += `
+                    <div class="product-card">
+                        <img src="${p.image}" alt="${p.name}" class="product-img">
+                        <div class="product-info">
+                            <div>
+                                <a href="detail.html?id=${p.id}" class="product-name">${p.name}</a>
+                                <div class="product-price">${p.price}</div>
+                            </div>
+                            <a href="detail.html?id=${p.id}" class="btn-detail">Xem chi tiết</a>
+                        </div>
+                    </div>
+                `;
+            });
+
+            productListContainer.innerHTML = html;
+        });
+    </script>
+</body>
+</html>
