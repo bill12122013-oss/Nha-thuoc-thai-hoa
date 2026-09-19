@@ -154,6 +154,11 @@
         .btn-submit:hover {
             background: #0f766e;
         }
+
+        .btn-submit:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -215,6 +220,20 @@
             const productListArea = document.getElementById("summary-products-list");
             const totalPriceEl = document.getElementById("summary-total-price");
 
+            // Tự động điền thông tin nếu người dùng đã đăng nhập trước đó
+            const currentUser = JSON.parse(localStorage.getItem("currentUser")) || JSON.parse(localStorage.getItem("user"));
+            if (currentUser) {
+                const nameInput = document.getElementById("fullname");
+                const phoneInput = document.getElementById("phone");
+                
+                if (nameInput && !nameInput.value) {
+                    nameInput.value = currentUser.name || currentUser.fullname || currentUser.displayName || "";
+                }
+                if (phoneInput && !phoneInput.value) {
+                    phoneInput.value = currentUser.phone || "";
+                }
+            }
+
             let totalAmount = 0;
             let htmlList = '';
 
@@ -251,15 +270,28 @@
                     return;
                 }
 
+                // Kiểm tra định dạng số điện thoại đơn giản (từ 10-11 chữ số)
+                const phoneRegex = /^[0-9]{10,11}$/;
+                if (!phoneRegex.test(phone)) {
+                    alert("Số điện thoại không hợp lệ! Vui lòng nhập từ 10 đến 11 chữ số.");
+                    document.getElementById("phone").focus();
+                    return;
+                }
+
                 if (cart.length === 0) {
                     alert("Giỏ hàng của bạn đang trống!");
                     return;
                 }
 
-                // Tạo đối tượng đơn hàng
+                // Khóa nút bấm để tránh double-click
+                confirmBtn.disabled = true;
+                confirmBtn.innerText = "Đang xử lý...";
+
+                // Tạo đối tượng đơn hàng (có kèm thông tin user nếu đã đăng nhập)
                 const newOrder = {
                     id: "DH" + Date.now(),
                     customer: { fullname, phone, address },
+                    userEmail: currentUser ? (currentUser.email || currentUser.username || "Thành viên") : "Khách vãng lai",
                     items: cart,
                     total: totalAmount,
                     date: new Date().toLocaleString('vi-VN')
