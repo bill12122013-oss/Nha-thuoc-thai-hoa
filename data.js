@@ -1,22 +1,6 @@
-// --- CÁC HÀM QUẢN LÝ GIỎ HÀNG THEO TỪNG TÀI KHOẢN (UID) ---
-
-// Lấy mã UID của user đang đăng nhập hiện tại từ Firebase/LocalStorage
-function getCurrentUserUid() {
-    const user = JSON.parse(localStorage.getItem("user"));
-    return user ? user.uid : "guest"; // Nếu chưa đăng nhập thì dùng tạm key "guest"
-}
-
-// Lấy giỏ hàng riêng biệt của tài khoản đang đăng nhập
-function getCart() {
-    const uid = getCurrentUserUid();
-    return JSON.parse(localStorage.getItem("cart_" + uid)) || [];
-}
-
-// Lưu giỏ hàng riêng biệt cho tài khoản đang đăng nhập
-function saveCart(cart) {
-    const uid = getCurrentUserUid();
-    localStorage.setItem("cart_" + uid, JSON.stringify(cart));
-}
+// ==========================================
+// 1. DANH SÁCH SẢN PHẨM
+// ==========================================
 const products = [
     {
         id: 1,
@@ -45,6 +29,64 @@ const products = [
         price: "85.000 đ",
         image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO5Ab_I8X3D8TWoQxytkuro0sVt9w66fLAf1u5YQt8xvU5CbbPzC_4rPU&s=10",
         description: "Sủi Vitamin C giúp thanh nhiệt, giảm mệt mỏi, hỗ trợ miễn dịch hiệu quả."
-    },
+    }
 ];
 
+// ==========================================
+// 2. CÁC HÀM QUẢN LÝ GIỎ HÀNG THEO UID USER
+// ==========================================
+
+// Lấy UID của user đang đăng nhập hiện tại từ LocalStorage
+function getCurrentUserUid() {
+    const userStr = localStorage.getItem("user");
+    if (!userStr) return "guest"; // Nếu chưa đăng nhập thì dùng key "guest"
+    
+    try {
+        const user = JSON.parse(userStr);
+        return user.uid || user.id || user.email || "guest";
+    } catch (e) {
+        return "guest";
+    }
+}
+
+// Lấy giỏ hàng riêng của tài khoản đang đăng nhập
+function getCart() {
+    const uid = getCurrentUserUid();
+    return JSON.parse(localStorage.getItem("cart_" + uid)) || [];
+}
+
+// Lưu giỏ hàng riêng cho tài khoản đang đăng nhập
+function saveCart(cart) {
+    const uid = getCurrentUserUid();
+    localStorage.setItem("cart_" + uid, JSON.stringify(cart));
+}
+
+// Hàm thêm sản phẩm vào giỏ hàng của user hiện tại
+function addToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    let cart = getCart();
+    const existingIndex = cart.findIndex(item => item.id === productId);
+
+    if (existingIndex > -1) {
+        cart[existingIndex].quantity += 1;
+    } else {
+        cart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: 1
+        });
+    }
+
+    saveCart(cart);
+    alert("Đã thêm sản phẩm vào giỏ hàng!");
+}
+
+// Hàm xử lý đăng xuất
+function logout() {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+}
