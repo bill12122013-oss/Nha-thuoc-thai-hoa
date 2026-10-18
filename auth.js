@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
         userNav.innerHTML = `
             <div class="user-info" style="display: flex; align-items: center; gap: 8px;">
                 <img src="${currentUser.avatar || 'https://via.placeholder.com/32'}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
-                <span style="font-size: 13px;"><strong>${currentUser.fullname}</strong></span>
+                <span style="font-size: 13px;"><strong>${currentUser.fullname || currentUser.email}</strong></span>
                 <button class="btn-logout" onclick="logout()" style="background: none; border: none; color: #ef4444; font-weight: 600; cursor: pointer; font-size: 12px; margin-left: 5px;">Thoát</button>
             </div>
         `;

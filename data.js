@@ -36,13 +36,14 @@ const products = [
 // 2. CÁC HÀM QUẢN LÝ GIỎ HÀNG THEO UID USER
 // ==========================================
 
-// Lấy UID của user đang đăng nhập hiện tại từ LocalStorage
+// Lấy UID/Email của user đang đăng nhập từ LocalStorage
 function getCurrentUserUid() {
-    const userStr = localStorage.getItem("user");
-    if (!userStr) return "guest"; // Nếu chưa đăng nhập thì dùng key "guest"
+    const userStr = localStorage.getItem("currentUser");
+    if (!userStr) return "guest"; // Chưa đăng nhập thì dùng key "guest"
     
     try {
         const user = JSON.parse(userStr);
+        // Ưu tiên lấy uid > id > email > guest
         return user.uid || user.id || user.email || "guest";
     } catch (e) {
         return "guest";
@@ -85,8 +86,8 @@ function addToCart(productId) {
     alert("Đã thêm sản phẩm vào giỏ hàng!");
 }
 
-// Hàm xử lý đăng xuất
+// Hàm xử lý đăng xuất chuẩn hóa dùng key "currentUser"
 function logout() {
-    localStorage.removeItem("user");
+    localStorage.removeItem("currentUser");
     window.location.href = "login.html";
 }
