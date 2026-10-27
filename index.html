@@ -268,7 +268,7 @@
 
     <div id="ai-chat-box" class="ai-chat-container hidden">
         <div class="ai-chat-header">
-            <span>🤖 Dược Sĩ AI Thái Hòa</span>
+            <span>🤖 Dược Sĩ AI</span>
             <button id="ai-chat-close">&times;</button>
         </div>
         <div id="ai-chat-messages" class="ai-chat-body">
@@ -338,7 +338,7 @@
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${AQ.Ab8RN6Kzd4wDsg3F5zPbjuF2IBZ2ELtD93hs4YIBYodMv_cjew}`
+                            'Authorization': `Bearer ${GEMINI_API_KEY}`
                         },
                         body: JSON.stringify({
                             contents: [{
