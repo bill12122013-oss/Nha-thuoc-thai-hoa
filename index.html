@@ -311,8 +311,8 @@
             }
 
             // --- XỬ LÝ CHATBOT AI ---
-            // ⚠️ Dán mã API Key của bạn vào trong cặp ngoặc kép dưới đây ⚠️
-            const GEMINI_API_KEY = "AQ.Ab8RN6K-q-w7ZFPjfFhe1uTQNlzU5OOhFOTBjfdnHQNvI2IDvg";
+            // Dán mã Auth Key bắt đầu bằng "AQ." của bạn vào trong cặp ngoặc kép dưới đây:
+            const GEMINI_API_KEY = "AQ.Ab8RN6Kzd4wDsg3FzPbjuf2IBZ2ELtD93hs4YIBYodMv_cjew";
 
             const toggleBtn = document.getElementById('ai-chat-toggle');
             const closeBtn = document.getElementById('ai-chat-close');
@@ -334,10 +334,12 @@
                 const loadingMessage = appendMessage('Dược sĩ AI đang suy nghĩ...', 'ai-message');
 
                 try {
-                    // Đã sửa lại dùng đúng biến ${GEMINI_API_KEY} và model gemini-1.5-flash chuẩn
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${AQ.Ab8RN6Kzd4wDsg3F5zPbjuF2IBZ2ELtD93hs4YIBYodMv_cjew}`
+                        },
                         body: JSON.stringify({
                             contents: [{
                                 parts: [{
@@ -346,7 +348,6 @@
                             }]
                         })
                     });
-
                     const data = await response.json();
                     if (data.candidates && data.candidates[0].content.parts[0].text) {
                         loadingMessage.textContent = data.candidates[0].content.parts[0].text;
